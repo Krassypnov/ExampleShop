@@ -1,0 +1,5 @@
+# Visual Studio files
+/.vs
+*.csproj.user
+**/obj
+**/bin
