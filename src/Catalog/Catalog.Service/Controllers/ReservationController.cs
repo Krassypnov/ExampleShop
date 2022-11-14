@@ -16,24 +16,24 @@ namespace Catalog.Service.Controllers
             this.reservationService = reservationService ?? throw new ArgumentNullException(nameof(reservationService));
         }
 
-        [HttpPost("MakeOrder")]
-        public async Task MakeOrder(IEnumerable<OrderItem> orderItems)
+        [HttpPost("[action]")]
+        public async Task Reserve(IEnumerable<OrderItem> orderItems)
             => await reservationService.Reserve(orderItems);
         
 
-        [HttpGet("GetItems/{orderId}")]
-        public async Task<IEnumerable<Product>> GetItems(Guid orderId)
+        [HttpGet("order/{id}")]
+        public async Task<IEnumerable<Product>> GetOrderItems(Guid orderId)
             => await reservationService.GetOrderProducts(orderId);
 
-        [HttpPost("CancelOrder/{orderId}")]
+        [HttpPost("order/{id}/cancel")]
         public async Task CancelOrder(Guid orderId)
             => await reservationService.CancelReservation(orderId);
 
-        [HttpPost("FinishOrder/{orderId}")]
+        [HttpPost("order/{id}/finish")]
         public async Task FinishOrder(Guid orderId)
             => await reservationService.FinishOrder(orderId);
 
-        [HttpGet("GetAllItems")]
+        [HttpGet]
         public async Task<IEnumerable<OrderItem>> GetAll()
             => await reservationService.GetAllItems();
     }

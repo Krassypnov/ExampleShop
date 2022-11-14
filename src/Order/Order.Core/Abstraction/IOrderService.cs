@@ -6,8 +6,7 @@ namespace Order.Core.Abstraction
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Product>> GetCatalog(int itemCount, int page);
-        Task AddToCatalog(long productId, int count);
+        Task AddToOrder(long productId, int count);
         Task<IEnumerable<OrderItem>> GetOrderItems();
         Task<OrderModel?> GetOrderInfo(Guid orderId);
         Task<ServiceResult> ConfirmOrder(ClientModel clientInfo);

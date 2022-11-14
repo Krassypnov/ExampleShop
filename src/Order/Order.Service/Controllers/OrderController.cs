@@ -17,28 +17,21 @@ namespace Order.Service.Controllers
             this.orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
         }
 
-        [HttpGet("Catalog")]
-        public async Task<IEnumerable<Product>> GetCatalog(int itemCount, int page)
-        {
-            var products = await orderService.GetCatalog(itemCount, page);
-            return products;
-        }
-
-        [HttpGet("OrderItems")]
+        [HttpGet]
         public async Task<IEnumerable<OrderItem>> GetOrderItems()
             => await orderService.GetOrderItems();
 
-        [HttpGet("GetOrderInfo/{orderId}")]
+        [HttpGet("{orderId}/info")]
         public async Task<OrderModel?> GetOrderInfo(Guid orderId)
             => await orderService.GetOrderInfo(orderId);
 
-        [HttpPost("AddProduct")]
+        [HttpPost("product")]
         public async Task AddProduct(long productId, int count)
         {
-            await orderService.AddToCatalog(productId, count);
+            await orderService.AddToOrder(productId, count);
         }
 
-        [HttpPost("ConfirmOrder")]
+        [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmOrder(ClientModel clientInfo)
         {
             if (clientInfo is null)
@@ -55,12 +48,12 @@ namespace Order.Service.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("CancelOrder/{orderId}")]
-        public async Task CancelOrder(Guid orderId)
-            => await orderService.CancelOrder(orderId);
+        [HttpPost("{id}/cancel")]
+        public async Task CancelOrder(Guid id)
+            => await orderService.CancelOrder(id);
 
-        [HttpPost("FinishOrder/{orderId}")]
-        public async Task FinishOrder(Guid orderId)
-            => await orderService.FinishOrder(orderId);
+        [HttpPost("{id}/finish")]
+        public async Task FinishOrder(Guid id)
+            => await orderService.FinishOrder(id);
     }
 }

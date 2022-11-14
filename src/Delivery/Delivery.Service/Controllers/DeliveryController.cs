@@ -16,28 +16,28 @@ namespace Delivery.Service.Controllers
         {
             this.deliveryService = deliveryService ?? throw new ArgumentNullException(nameof(deliveryService));
         }
-        [HttpGet("GetOrderProducts/{orderId}")]
-        public async Task<IEnumerable<Product>?> GetProducts(Guid orderId)
-            => await deliveryService.GetProducts(orderId);
+        [HttpGet("order/{id}/products")]
+        public async Task<IEnumerable<Product>?> GetProducts(Guid id)
+            => await deliveryService.GetProducts(id);
 
-        [HttpGet("GetAllOrders")]
+        [HttpGet("orders")]
         public async Task<IEnumerable<DeliveryItem>> GetAllOrders()
             => await deliveryService.GetAllOrders();
 
-        [HttpGet("GetOrderInfo/{orderId}")]
-        public async Task<OrderModel?> GetOrderInfo(Guid orderId)
-            => await deliveryService.GetOrderInfo(orderId);
+        [HttpGet("order/{id}/info")]
+        public async Task<OrderModel?> GetOrderInfo(Guid id)
+            => await deliveryService.GetOrderInfo(id);
 
-        [HttpPost("ReturnOrder/{orderId}")]
-        public async Task ReturnOrder(Guid orderId)
-            => await deliveryService.ReturnOrder(orderId);
+        [HttpPost("order/{id}/return")]
+        public async Task ReturnOrder(Guid id)
+            => await deliveryService.ReturnOrder(id);
 
-        [HttpPost("FinishOrder/{orderId}")]
-        public async Task FinishOrder(Guid orderId)
-            => await deliveryService.FinishOrder(orderId);
+        [HttpPost("order/{id}/finish")]
+        public async Task FinishOrder(Guid id)
+            => await deliveryService.FinishOrder(id);
 
-        [HttpPost("HandleOrder/{orderId}")]
-        public async Task HandleOrder(Guid orderId)
-            => await deliveryService.RecordOrder(orderId);
+        [HttpPost("order/{id}")]
+        public async Task HandleOrder(Guid id)
+            => await deliveryService.RecordOrder(id);
     }
 }

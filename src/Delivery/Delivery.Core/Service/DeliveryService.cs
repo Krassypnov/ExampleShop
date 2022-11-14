@@ -25,7 +25,7 @@ namespace Delivery.Core.Service
 
         public async Task<OrderModel?> GetOrderInfo(Guid orderId)
         {
-            var orderRequest = $"api/Order/GetOrderInfo/{orderId}";
+            var orderRequest = $"api/Order/{orderId}/info";
             var orderService = httpFactory.CreateClient("OrderService");
             var orderInfo = await orderService.GetFromJsonAsync<OrderModel>(orderRequest);
 
@@ -34,7 +34,7 @@ namespace Delivery.Core.Service
 
         public async Task<IEnumerable<Product>?> GetProducts(Guid orderId)
         {
-            var catalogRequest = $"api/Reservation/GetItems/{orderId}";
+            var catalogRequest = $"api/Reservation/order/{orderId}";
             var catalogService = httpFactory.CreateClient("CatalogService");
             var products = await catalogService.GetFromJsonAsync<IEnumerable<Product>>(catalogRequest);
 
@@ -46,7 +46,7 @@ namespace Delivery.Core.Service
 
         public async Task ReturnOrder(Guid orderId)
         {
-            var catalogRequest = $"api/Order/CancelOrder/{orderId}";
+            var catalogRequest = $"api/Order/{orderId}/cancel";
             var catalogService = httpFactory.CreateClient("OrderService");
             var response = await catalogService.PostAsync(catalogRequest, null);
 
@@ -56,7 +56,7 @@ namespace Delivery.Core.Service
 
         public async Task FinishOrder(Guid orderId)
         {
-            var orderRequest = $"api/Order/FinishOrder/{orderId}";
+            var orderRequest = $"api/Order/{orderId}/finish";
             var orderService = httpFactory.CreateClient("OrderService");
             var response = await orderService.PostAsync(orderRequest, null);
 

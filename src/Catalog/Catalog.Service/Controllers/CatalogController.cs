@@ -17,38 +17,38 @@ namespace Catalog.Service.Controllers
             this.catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
         }
 
-        [HttpGet("GetCatalog/{itemCount},{page}")]
+        [HttpGet]
         public async Task<IEnumerable<Product>> GetCatalog(int itemCount = 20, int page = 0)
             => await catalogService.GetCatalog(itemCount, page);
 
-        [HttpGet("Brand")]
+        [HttpGet("brands")]
         public async Task<IEnumerable<Brand>> GetBrands(int itemCount = 20, int page = 0)
             => await catalogService.GetBrands(itemCount, page);
 
-        [HttpGet("Category")]
+        [HttpGet("categories")]
         public async Task<IEnumerable<Category>> GetCategories(int itemCount = 20, int page = 0)
             => await catalogService.GetCategories(itemCount, page);
 
-        [HttpPost("Product")]
+        [HttpPost("product")]
         public async Task AddProduct(Product product)
         {
             await catalogService.AddProduct(product);
         }
 
-        [HttpPost("Brand")]
+        [HttpPost("brand")]
         public async Task AddBrand(string name)
         {
             await catalogService.AddBrand(name);
         }
 
-        [HttpPost("Category")]
+        [HttpPost("category")]
         public async Task AddCategory(string name)
         {
             await catalogService.AddCategory(name);
         }
 
-        [HttpGet("Exists/{productId},{count}")]
-        public async Task<bool> IsProductExists(long productId, int count)
-            => await catalogService.Exists(productId, count);
+        [HttpGet("product/{id}/exists")]
+        public async Task<bool> IsProductExists(long id,[FromBody] int count)
+            => await catalogService.Exists(id, count);
     }
 }
