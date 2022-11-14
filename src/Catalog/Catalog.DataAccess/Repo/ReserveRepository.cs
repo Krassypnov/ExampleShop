@@ -25,18 +25,12 @@ namespace Catalog.DataAccess.Repo
 
         public async Task MakeReservation(IEnumerable<OrderItem> orderItems)
         {
-            if (orderItems is null || !orderItems.Any())
-                return;
-
             await dbContext.AddRangeAsync(orderItems);
             await dbContext.SaveChangesAsync();
         }
 
         public async Task RemoveItems(IEnumerable<OrderItem> orderItems)
         {
-            if (orderItems is null || !orderItems.Any())
-                return;
-
             dbContext.ReserveProducts.RemoveRange(orderItems);
             await dbContext.SaveChangesAsync();
         }

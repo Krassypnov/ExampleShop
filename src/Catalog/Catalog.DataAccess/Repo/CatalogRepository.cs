@@ -21,68 +21,39 @@ namespace Catalog.DataAccess.Repo
 
         public async Task AddBrand(Brand brand)
         {
-            if (brand is null)
-                return;
-            if (await IsBrandExists(brand.Name))
-                return;
             await dbContext.Brands.AddAsync(brand);
             await dbContext.SaveChangesAsync();
         }
 
         public async Task AddCategory(Category category)
         {
-            if (category is null)
-                return;
-            if (await IsCategoryExists(category.Name))
-                return;
             await dbContext.Categories.AddAsync(category);
             await dbContext.SaveChangesAsync();
         }
 
         public async Task AddProduct(Product product)
         {
-            if (product is null)
-                return;
-
-            if (await IsProductExists(product.Name))
-                return;
-            if (!await IsBrandExists(product.Brand))
-                return;
-            if (!await IsCategoryExists(product.Category))
-                return;
             await dbContext.Products.AddAsync(product);
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Brand>> GetBrands(int itemCount, int page)
-        {
-            if (itemCount <= 0) itemCount = 20;
-            if (page < 0) page = 0;
+        public async Task<IEnumerable<Brand>> GetBrands(int skip, int take)
+            => await dbContext.Brands.Skip(skip).Take(take).ToListAsync();
+        
 
-            return await dbContext.Brands.Skip(itemCount * page).Take(itemCount).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Product>> GetCatalog(int itemCount = 20, int page = 0)
-        {
-            if (itemCount <= 0) itemCount = 20;
-            if (page < 0) page = 0;
-
-            return await dbContext.Products.Skip(itemCount * page).Take(itemCount).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Category>> GetCategories(int itemCount, int page)
-        {
-            if (itemCount <= 0) itemCount = 20;
-            if (page < 0) page = 0;
-
-            return await dbContext.Categories.Skip(itemCount * page).Take(itemCount).ToListAsync();
-        }
+        public async Task<IEnumerable<Product>> GetCatalog(int skip, int take)
+            => await dbContext.Products.Skip(skip).Take(take).ToListAsync();
+        
+        public async Task<IEnumerable<Category>> GetCategories(int skip, int take)
+            => await dbContext.Categories.Skip(skip).Take(take).ToListAsync();
+        
 
         public async Task<Product?> GetProduct(long id)
             => await dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<IEnumerable<Product>> GetProductsById(IEnumerable<long> productIds)
             => await dbContext.Products
+                            .AsNoTracking()
                             .Where(Product => productIds.Contains(Product.Id))
                             .ToListAsync();
 
@@ -105,9 +76,6 @@ namespace Catalog.DataAccess.Repo
 
         public async Task ReturnProducts(IEnumerable<OrderItem> items)
         {
-            if (items is null || !items.Any())
-                return;
-
             foreach (var item in items)
             {
                 var product = await dbContext.Products.FirstOrDefaultAsync(x => x.Id == item.ProductId);
@@ -124,9 +92,6 @@ namespace Catalog.DataAccess.Repo
 
         public async Task<bool> UpdateProductCount(IEnumerable<OrderItem> items)
         {
-            if (items is null || !items.Any())
-                return false;
-
             foreach (var item in items)
             {
                 var product = await dbContext.Products.FirstOrDefaultAsync(x => x.Id == item.ProductId);
@@ -147,6 +112,13 @@ namespace Catalog.DataAccess.Repo
 
             await dbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> IsValidProduct(Product product)
+        {
+            return !(await IsProductExists(product.Name))
+                 && (await IsBrandExists(product.Brand))
+                 && (await IsCategoryExists(product.Category));
         }
     }
 }

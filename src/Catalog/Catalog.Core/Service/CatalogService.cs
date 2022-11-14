@@ -17,13 +17,13 @@ namespace Catalog.Core.Service
 
         public async Task AddBrand(string name)
         {
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(name) && !await repo.IsBrandExists(name))
                 await repo.AddBrand(new Brand(name));
         }
 
         public async Task AddCategory(string name)
         {
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(name) && !await repo.IsCategoryExists(name))
                 await repo.AddCategory(new Category(name));
         }
 
@@ -32,7 +32,8 @@ namespace Catalog.Core.Service
             if (product is null || !product.IsFull())
                 return;
 
-            await repo.AddProduct(product);
+            if (await repo.IsValidProduct(product))
+                await repo.AddProduct(product);
         }
 
         public async Task<bool> Exists(long id, int count)
@@ -45,12 +46,23 @@ namespace Catalog.Core.Service
         }
 
         public async Task<IEnumerable<Brand>> GetBrands(int itemsCount, int page)
-            => await repo.GetBrands(itemsCount, page);
+        {
+            if (itemsCount < 0) itemsCount = 20;
+            if (page < 0) page = 0;
+            return await repo.GetBrands(itemsCount * page, itemsCount);
+        }
 
         public async Task<IEnumerable<Product>> GetCatalog(int itemsCount, int page)
-            => await repo.GetCatalog(itemsCount, page);
-
+        {
+            if (itemsCount < 0) itemsCount = 20;
+            if (page < 0) page = 0;
+            return await repo.GetCatalog(itemsCount * page, itemsCount);
+        }
         public async Task<IEnumerable<Category>> GetCategories(int itemsCount, int page)
-            => await repo.GetCategories(itemsCount, page);
+        {
+            if (itemsCount < 0) itemsCount = 20;
+            if (page < 0) page = 0;
+            return await repo.GetCategories(itemsCount * page, itemsCount);
+        }
     }
 }
