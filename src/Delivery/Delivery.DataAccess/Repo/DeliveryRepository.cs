@@ -26,9 +26,6 @@ namespace Delivery.DataAccess.Repo
 
         public async Task RecordOrder(DeliveryItem item)
         {
-            if (item is null)
-                return;
-
             await dbContext.DeliveryItems.AddAsync(item);
             await dbContext.SaveChangesAsync();
         }

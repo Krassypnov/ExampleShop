@@ -126,7 +126,7 @@ namespace Order.Core.Service
             await orderRepository.ChangeOrderStatus(orderId, OrderStatus.Delivered);
         }
 
-            private async Task<bool> IsProductExists(long id, int count)
+        private async Task<bool> IsProductExists(long id, int count)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"api/Catalog/Exists/{id},{count}");
             var client = httpFactory.CreateClient("CatalogService");

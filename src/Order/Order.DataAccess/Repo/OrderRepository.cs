@@ -16,18 +16,12 @@ namespace Order.DataAccess.Repo
 
         public async Task AddOrder(OrderModel order)
         {
-            if (order is null)
-                return;
-
             await dbContext.Orders.AddAsync(order);
             await dbContext.SaveChangesAsync();
         }
 
         public async Task AddItemToOrder(OrderItem item)
         {
-            if (item is null)
-                return;
-
             await dbContext.OrderItems.AddAsync(item);
             await dbContext.SaveChangesAsync();
         }
