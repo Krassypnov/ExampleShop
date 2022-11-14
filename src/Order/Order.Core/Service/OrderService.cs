@@ -5,7 +5,7 @@ using Models;
 using Models.Enums;
 using System.Net.Http.Json;
 using Order.Core.Message;
-using Order.DataAccess.Dto;
+using Order.Core.Entities;
 using System.Net.Http.Headers;
 
 namespace Order.Core.Service
@@ -77,7 +77,7 @@ namespace Order.Core.Service
             await orderRepository.AddOrder(order);
 
             // Sending to CatalogService
-            var catalogRequest = "api/Reservation/Reserve";
+            var catalogRequest = "api/Reservation";
             var catalogService = httpFactory.CreateClient("CatalogService");
             await catalogService.PostAsJsonAsync(catalogRequest, orderItems);
 

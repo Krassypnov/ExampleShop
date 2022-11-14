@@ -1,5 +1,5 @@
 ﻿
-namespace Catalog.DataAccess.Dto
+namespace Catalog.DataAccess.Entities
 {
     public class Brand
     {

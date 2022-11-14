@@ -1,6 +1,6 @@
 ﻿
 
-namespace Order.DataAccess.Dto
+namespace Order.Core.Entities
 {
     public class ClientModel
     {

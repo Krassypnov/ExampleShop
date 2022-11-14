@@ -5,6 +5,7 @@ using Catalog.DataAccess.Abstraction;
 using Catalog.DataAccess.Repo;
 using Catalog.Core.Abstraction;
 using Catalog.Core.Service;
+using Microsoft.OpenApi.Models;
 
 namespace Catalog.Service
 {
@@ -19,7 +20,16 @@ namespace Catalog.Service
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Catalog Api",
+                    Version = "v1"
+                });
+                var filePath = Path.Combine(AppContext.BaseDirectory, "CatalogApi.xml");
+                c.IncludeXmlComments(filePath);
+            });
 
             var dbPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}{Path.DirectorySeparatorChar}Catalog.db";
             builder.Services.AddDbContext<CatalogContext>(options =>

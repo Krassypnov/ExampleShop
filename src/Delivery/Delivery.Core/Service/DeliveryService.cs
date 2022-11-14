@@ -1,10 +1,6 @@
-﻿
-
-using Delivery.Core.Abstraction;
+﻿using Delivery.Core.Abstraction;
 using Delivery.DataAccess.Abstraction;
-using Delivery.DataAccess.Dto;
 using Models;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace Delivery.Core.Service

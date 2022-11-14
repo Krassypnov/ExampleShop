@@ -1,6 +1,6 @@
 ﻿using Models;
 using Order.Core.Message;
-using Order.DataAccess.Dto;
+using Order.Core.Entities;
 
 namespace Order.Core.Abstraction
 {

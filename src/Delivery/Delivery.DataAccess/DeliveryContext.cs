@@ -1,4 +1,4 @@
-﻿using Delivery.DataAccess.Dto;
+﻿using Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.DataAccess

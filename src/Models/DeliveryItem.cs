@@ -1,6 +1,6 @@
 ﻿
 
-namespace Delivery.DataAccess.Dto
+namespace Models
 {
     public class DeliveryItem
     {

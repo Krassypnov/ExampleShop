@@ -1,4 +1,4 @@
-﻿using Catalog.DataAccess.Dto;
+﻿using Catalog.DataAccess.Entities;
 using Models;
 
 namespace Catalog.DataAccess.Abstraction

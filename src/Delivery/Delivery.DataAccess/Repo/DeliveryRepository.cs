@@ -1,7 +1,6 @@
 ﻿using Models;
 using Microsoft.EntityFrameworkCore;
 using Delivery.DataAccess.Abstraction;
-using Delivery.DataAccess.Dto;
 
 namespace Delivery.DataAccess.Repo
 {

@@ -1,5 +1,5 @@
 ﻿using Catalog.DataAccess.Abstraction;
-using Catalog.DataAccess.Dto;
+using Catalog.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System;

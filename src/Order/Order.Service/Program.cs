@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Order.DataAccess;
 using Order.DataAccess.Abstraction;
 using Order.DataAccess.Repo;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,16 @@ builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    { 
+      Title = "Order Api",
+      Version = "v1"
+    });
+    var filePath = Path.Combine(AppContext.BaseDirectory, "OrderApi.xml");
+    c.IncludeXmlComments(filePath);
+});
 
 
 builder.Services.AddDistributedMemoryCache();

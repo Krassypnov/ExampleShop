@@ -1,6 +1,6 @@
 ﻿using Catalog.Core.Abstraction;
 using Catalog.DataAccess.Abstraction;
-using Catalog.DataAccess.Dto;
+using Catalog.DataAccess.Entities;
 using Models;
 
 

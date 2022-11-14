@@ -1,5 +1,4 @@
-﻿using Delivery.DataAccess.Dto;
-using Models;
+﻿using Models;
 
 namespace Delivery.Core.Abstraction
 {
