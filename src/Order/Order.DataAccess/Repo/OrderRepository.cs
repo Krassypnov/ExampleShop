@@ -66,5 +66,11 @@ namespace Order.DataAccess.Repo
 
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task<OrderStatus> GetStatus(Guid orderId)
+        {
+            var order = await dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+            return order == null ? OrderStatus.Undefined : order.OrderStatus;
+        }
     }
 }

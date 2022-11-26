@@ -30,8 +30,8 @@ namespace Delivery.Core.Service
 
         public async Task<IEnumerable<Product>?> GetProducts(Guid orderId)
         {
-            var catalogRequest = $"api/Reservation/order/{orderId}";
-            var catalogService = httpFactory.CreateClient("CatalogService");
+            var catalogRequest = $"api/Order/{orderId}/products";
+            var catalogService = httpFactory.CreateClient("OrderService");
             var products = await catalogService.GetFromJsonAsync<IEnumerable<Product>>(catalogRequest);
 
             return products;

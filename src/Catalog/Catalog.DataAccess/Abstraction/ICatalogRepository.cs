@@ -17,7 +17,7 @@ namespace Catalog.DataAccess.Abstraction
         Task<bool> IsBrandExists(string name);
         Task<bool> IsCategoryExists(string name);
         Task<bool> IsValidProduct(Product product);
-        Task<bool> UpdateProductCount(IEnumerable<OrderItem> items);
-        Task ReturnProducts(IEnumerable<OrderItem> items);
+        Task<bool> UpdateProductCount(IEnumerable<ReservedItem> items);
+        Task ReturnProducts(IEnumerable<ReservedItem> items);
     }
 }

@@ -6,9 +6,8 @@ namespace Catalog.DataAccess.Abstraction
 {
     public interface IReserveRepository
     {
-        Task MakeReservation(IEnumerable<OrderItem> orderItems);
-        Task<IEnumerable<OrderItem>> GetReserveProducts(Guid orderId);
-        Task RemoveItems(IEnumerable<OrderItem> orderItems);
-        Task<IEnumerable<OrderItem>> GetAll();
+        Task AddOrUpdate(IEnumerable<ReservedItem> items);
+        Task RemoveOrUpdate(IEnumerable<ReservedItem> items);
+        Task<IEnumerable<ReservedItem>> GetItems(int skip, int take);
     }
 }

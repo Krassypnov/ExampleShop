@@ -16,47 +16,40 @@ namespace Catalog.Core.Service
             this.reserveRepository = reserveRepository ?? throw new ArgumentNullException(nameof(reserveRepository));
             this.catalogRepository = catalogRepository ?? throw new ArgumentNullException(nameof(catalogRepository));
         }
-        #region devonly
-        public async Task<IEnumerable<OrderItem>> GetAllItems()
-            => await reserveRepository.GetAll();
 
-        #endregion
-
-        public async Task CancelReservation(Guid orderId)
+        public async Task AddOrUpdate(IEnumerable<ReservedItem> items)
         {
-            var items = await reserveRepository.GetReserveProducts(orderId);
             if (items is null || !items.Any())
                 return;
-            await catalogRepository.ReturnProducts(items);
-            await reserveRepository.RemoveItems(items);
-        }
 
-        public async Task<IEnumerable<Product>> GetOrderProducts(Guid orderId)
-        {
-            var orderItems = await reserveRepository.GetReserveProducts(orderId);
-            var orderItemIds = from item in orderItems
-                               select item.ProductId;
-
-            return await catalogRepository.GetProductsById(orderItemIds);
-        }
-
-        public async Task Reserve(IEnumerable<OrderItem> orderItems)
-        {
-            if (orderItems == null || !orderItems.Any())
-                return;
-
-            var isUpdated = await catalogRepository.UpdateProductCount(orderItems);
+            var isUpdated = await catalogRepository.UpdateProductCount(items);
             if (isUpdated)
-                await reserveRepository.MakeReservation(orderItems);
+                await reserveRepository.AddOrUpdate(items);
         }
 
-        public async Task FinishOrder(Guid orderId)
+        public async Task<IEnumerable<ReservedItem>> GetReservedItems(int page, int pageSize)
         {
-            var items = await reserveRepository.GetReserveProducts(orderId);
-            if (items is null)
+            if (page < 0) page = 0;
+            if (pageSize < 0 || pageSize > 1000) pageSize = 20;
+
+            return await reserveRepository.GetItems(page * pageSize, pageSize);
+        }
+
+        public async Task RemoveOrUpdate(IEnumerable<ReservedItem> items)
+        {
+            if (items is null || !items.Any())
                 return;
 
-            await reserveRepository.RemoveItems(items);
+            await reserveRepository.RemoveOrUpdate(items);
+        }
+
+        public async Task Return(IEnumerable<ReservedItem> items)
+        {
+            if (items is null || !items.Any())
+                return;
+
+            await catalogRepository.ReturnProducts(items);
+            await reserveRepository.RemoveOrUpdate(items);
         }
     }
 }

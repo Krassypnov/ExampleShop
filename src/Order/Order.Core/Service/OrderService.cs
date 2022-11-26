@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using Order.Core.Message;
 using Order.Core.Entities;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Order.Core.Service
 {
@@ -26,12 +27,11 @@ namespace Order.Core.Service
 
         public async Task AddToOrder(long productId, int count = 1)
         {
+            var orderId = GetCurrentOrderId();
             var isExists = await IsProductExists(productId, count);
 
             if (!isExists)
                 return;
-
-            var orderId = GetCurrentOrderId();
 
             var orderItem = await orderRepository.GetItem(productId, orderId);
             if (orderItem is null)
@@ -56,9 +56,11 @@ namespace Order.Core.Service
 
         public async Task<ServiceResult> ConfirmOrder(ClientModel clientInfo)
         {
+            var orderId = GetCurrentOrderId();
+            if (await orderRepository.GetStatus(orderId) != OrderStatus.Undefined)
+                return new ServiceResult("Order is inactive", StatusCodes.Status400BadRequest);
             if (clientInfo is null)
                 return new ServiceResult("Model is null", StatusCodes.Status400BadRequest);
-            var orderId = GetCurrentOrderId();
             var orderItems = await GetOrderItems();
             if (orderItems is null)
                 return new ServiceResult("Order has no items", StatusCodes.Status400BadRequest);
@@ -77,14 +79,14 @@ namespace Order.Core.Service
             await orderRepository.AddOrder(order);
 
             // Sending to CatalogService
-            var catalogRequest = "api/Reservation";
+            var catalogRequest = "api/Reservation/Add";
             var catalogService = httpFactory.CreateClient("CatalogService");
             await catalogService.PostAsJsonAsync(catalogRequest, orderItems);
 
             // Sending to DeliveryService
             if (order.Delivery)
             {
-                var deliveryRequest = $"api/Delivery/order/{order.Id}";
+                var deliveryRequest = $"api/Delivery/{order.Id}";
                 await PostAsync("DeliveryService", deliveryRequest);
             }
             
@@ -95,20 +97,50 @@ namespace Order.Core.Service
 
         public async Task CancelOrder(Guid orderId)
         {
-            var catalogRequest = $"api/Reservation/order/{orderId}/cancel";
-            await PostAsync("CatalogService", catalogRequest);
+            if (!await IsActiveOrder(orderId))
+                return;
+            var catalogRequest = "api/Reservation/Return";
+            var items = await orderRepository.GetOrderItems(orderId);
+            var reservedItems = from item in items
+                                select new ReservedItem(item.ProductId, item.Count);
+            await PostJsonAsync("CatalogService", catalogRequest, reservedItems);
             await orderRepository.ChangeOrderStatus(orderId, OrderStatus.Canceled);
         }
 
         public async Task FinishOrder(Guid orderId)
         {
-            var catalogRequest = $"api/Reservation/order/{orderId}/finish";
-            await PostAsync("CatalogService", catalogRequest);
-            await orderRepository.ChangeOrderStatus(orderId, OrderStatus.Delivered);
+            if (!await IsActiveOrder(orderId))
+                return;
+            var catalogRequest = "api/Reservation/Remove";
+            var items = await orderRepository.GetOrderItems(orderId);
+            var reservedItems = from item in items
+                                select new ReservedItem(item.ProductId, item.Count);
+            await PostJsonAsync("CatalogService", catalogRequest, reservedItems);
+            await orderRepository.ChangeOrderStatus(orderId, OrderStatus.Finished);
         }
 
         public async Task<OrderModel?> GetOrderInfo(Guid orderId)
             => await orderRepository.GetOrder(orderId);
+
+        public async Task<IEnumerable<Product>> GetProducts(Guid orderId)
+        {
+            var items = await orderRepository.GetOrderItems(orderId);
+            var itemsIds = items.Select(x => x.ProductId);
+
+            var requestUri = $"api/Catalog/products/info";
+            var json = JsonConvert.SerializeObject(itemsIds, Formatting.Indented);
+            var content = new StringContent(json);
+            var serviceName = "CatalogService";
+
+            var resposne = await GetAsync(serviceName, requestUri, content);
+            if (resposne.IsSuccessStatusCode)
+            {
+                var products = await resposne.Content.ReadFromJsonAsync<IEnumerable<Product>>();
+                if (products is not null)
+                    return products;
+            }
+            return Enumerable.Empty<Product>();
+        }
 
         private async Task<bool> IsProductExists(long id, int count)
         {
@@ -153,11 +185,22 @@ namespace Order.Core.Service
             return await client.SendAsync(request);
         }
 
+        private async Task PostJsonAsync<T>(string serviceName, string requestUri, T content)
+        {
+            var service = httpFactory.CreateClient(serviceName);
+            await service.PostAsJsonAsync(requestUri, content);
+        }
+
         private async Task PostAsync(string serviceName, string requestUri)
         {
             var service = httpFactory.CreateClient(serviceName);
             await service.PostAsync(requestUri, null);
         }
 
+        private async Task<bool> IsActiveOrder(Guid orderId)
+        {
+            var status = await orderRepository.GetStatus(orderId);
+            return status == OrderStatus.Created;
+        }
     }
 }

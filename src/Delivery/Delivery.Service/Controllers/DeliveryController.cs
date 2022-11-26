@@ -47,7 +47,7 @@ namespace Delivery.Service.Controllers
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns></returns>
-        [HttpPost("order/{id}/return")]
+        [HttpPost("{id}/return")]
         public async Task ReturnOrder(Guid id)
             => await deliveryService.ReturnOrder(id);
 
@@ -56,8 +56,8 @@ namespace Delivery.Service.Controllers
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns></returns>
-        [HttpPost("order/{id}/finish")]
-        public async Task FinishOrder(Guid id)
+        [HttpPost("{id}/finish")]
+        public async Task FinishDelivery(Guid id)
             => await deliveryService.FinishOrder(id);
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace Delivery.Service.Controllers
         /// </summary>
         /// <param name="id">ID заказа</param>
         /// <returns></returns>
-        [HttpPost("order/{id}")]
-        public async Task HandleOrder(Guid id)
+        [HttpPost("{id}")]
+        public async Task AddOnDelivery(Guid id)
             => await deliveryService.RecordOrder(id);
     }
 }

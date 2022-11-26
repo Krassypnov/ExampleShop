@@ -74,7 +74,7 @@ namespace Catalog.DataAccess.Repo
                         .Where(x => x.Name == name)
                         .AnyAsync();
 
-        public async Task ReturnProducts(IEnumerable<OrderItem> items)
+        public async Task ReturnProducts(IEnumerable<ReservedItem> items)
         {
             foreach (var item in items)
             {
@@ -90,7 +90,7 @@ namespace Catalog.DataAccess.Repo
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateProductCount(IEnumerable<OrderItem> items)
+        public async Task<bool> UpdateProductCount(IEnumerable<ReservedItem> items)
         {
             foreach (var item in items)
             {

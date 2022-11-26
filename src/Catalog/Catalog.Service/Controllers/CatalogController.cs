@@ -88,5 +88,14 @@ namespace Catalog.Service.Controllers
         [HttpGet("product/{id}/exists")]
         public async Task<bool> IsProductExists(long id,[FromBody] int count)
             => await catalogService.Exists(id, count);
+
+        /// <summary>
+        /// Получить список продуктов
+        /// </summary>
+        /// <param name="productIds">Список ID продуктов</param>
+        /// <returns></returns>
+        [HttpGet("products/info")]
+        public async Task<IEnumerable<Product>> GetProductsById([FromBody] IEnumerable<long> productIds)
+            => await catalogService.GetProductsById(productIds);
     }
 }

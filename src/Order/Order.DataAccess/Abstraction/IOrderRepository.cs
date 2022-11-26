@@ -12,5 +12,6 @@ namespace Order.DataAccess.Abstraction
         Task<OrderModel?> GetOrder(Guid orderId);
         Task<OrderItem?> GetItem(long itemId, Guid orderId);
         Task UpdateItemCount(long itemId, int count);
+        Task<OrderStatus> GetStatus(Guid orderId);
     }
 }
