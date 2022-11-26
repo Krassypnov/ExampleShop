@@ -1,6 +1,7 @@
 ﻿using Catalog.Core.Abstraction;
 using Catalog.DataAccess.Abstraction;
 using Catalog.DataAccess.Entities;
+using Catalog.DataAccess.Repo;
 using Models;
 
 
@@ -58,11 +59,16 @@ namespace Catalog.Core.Service
             if (page < 0) page = 0;
             return await repo.GetCatalog(itemsCount * page, itemsCount);
         }
+
         public async Task<IEnumerable<Category>> GetCategories(int itemsCount, int page)
         {
             if (itemsCount < 0) itemsCount = 20;
             if (page < 0) page = 0;
             return await repo.GetCategories(itemsCount * page, itemsCount);
         }
+
+        public async Task<IEnumerable<Product>> GetProductsById(IEnumerable<long> productIds)
+            => await repo.GetProductsById(productIds);
+        
     }
 }

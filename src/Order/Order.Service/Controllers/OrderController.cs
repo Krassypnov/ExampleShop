@@ -85,5 +85,14 @@ namespace Order.Service.Controllers
         [HttpPost("{id}/finish")]
         public async Task FinishOrder(Guid id)
             => await orderService.FinishOrder(id);
+
+        /// <summary>
+        /// Получить продукты в заказе
+        /// </summary>
+        /// <param name="id">ID заказа</param>
+        /// <returns></returns>
+        [HttpGet("{id}/products")]
+        public async Task<IEnumerable<Product>> GetProducts(Guid id)
+            => await orderService.GetProducts(id);
     }
 }

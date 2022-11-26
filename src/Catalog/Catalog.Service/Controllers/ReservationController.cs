@@ -17,47 +17,40 @@ namespace Catalog.Service.Controllers
         }
 
         /// <summary>
-        /// Зарезервировать список продуктов
+        /// Зарезервировать продукты
         /// </summary>
-        /// <param name="orderItems">Список продуктов</param>
+        /// <param name="items">Список продуктов</param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task Reserve(IEnumerable<OrderItem> orderItems)
-            => await reservationService.Reserve(orderItems);
-        
-        /// <summary>
-        /// Получить список зарезервированных продуктов в заказе
-        /// </summary>
-        /// <param name="orderId">ID заказа</param>
-        /// <returns></returns>
-        [HttpGet("order/{id}")]
-        public async Task<IEnumerable<Product>> GetOrderItems(Guid orderId)
-            => await reservationService.GetOrderProducts(orderId);
+        [HttpPost("[action]")]
+        public async Task Add(IEnumerable<ReservedItem> items)
+            => await reservationService.AddOrUpdate(items);
 
         /// <summary>
-        /// Отменить резервацию продуктов
+        /// Убрать зарезервированные продукты (когда товар реализован)
         /// </summary>
-        /// <param name="orderId">ID заказа</param>
+        /// <param name="items"></param>
         /// <returns></returns>
-        [HttpPost("order/{id}/cancel")]
-        public async Task CancelOrder(Guid orderId)
-            => await reservationService.CancelReservation(orderId);
+        [HttpPost("[action]")]
+        public async Task Remove(IEnumerable<ReservedItem> items)
+            => await reservationService.RemoveOrUpdate(items);
 
         /// <summary>
-        /// Завершить заказ
+        /// Отменить и вернуть продукты 
         /// </summary>
-        /// <param name="orderId">ID заказа</param>
+        /// <param name="items"></param>
         /// <returns></returns>
-        [HttpPost("order/{id}/finish")]
-        public async Task FinishOrder(Guid orderId)
-            => await reservationService.FinishOrder(orderId);
+        [HttpPost("[action]")]
+        public async Task Return(IEnumerable<ReservedItem> items)
+            => await reservationService.Return(items);
 
         /// <summary>
-        /// Получить все зарезервированные продукты (dev only)
+        /// Получить зарезервированные продукты
         /// </summary>
+        /// <param name="page">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IEnumerable<OrderItem>> GetAll()
-            => await reservationService.GetAllItems();
+        [HttpGet("[action]")]
+        public async Task<IEnumerable<ReservedItem>> Get(int page = 0, int pageSize = 20)
+            => await reservationService.GetReservedItems(page, pageSize);
     }
 }

@@ -14,24 +14,45 @@ namespace Catalog.DataAccess.Repo
             this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task<IEnumerable<OrderItem>> GetAll()
-            => await dbContext.ReserveProducts.ToListAsync();
-
-        public async Task<IEnumerable<OrderItem>> GetReserveProducts(Guid orderId)
-            => await dbContext.ReserveProducts
-                        .AsNoTracking()
-                        .Where(x => x.OrderId == orderId)
-                        .ToListAsync();
-
-        public async Task MakeReservation(IEnumerable<OrderItem> orderItems)
+        public async Task AddOrUpdate(IEnumerable<ReservedItem> items)
         {
-            await dbContext.AddRangeAsync(orderItems);
+            foreach (var item in items)
+            {
+                var dbItem = await dbContext.ReservedItems.FirstOrDefaultAsync(x => x.ProductId == item.ProductId);
+                if (dbItem is not null)
+                {
+                    var entry = dbContext.Entry(dbItem);
+                    dbItem.Count += item.Count;
+                    entry.Property(x => x.Count).IsModified = true;
+                }
+                else
+                    await dbContext.ReservedItems.AddAsync(item);
+            }
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task RemoveItems(IEnumerable<OrderItem> orderItems)
+        public async Task<IEnumerable<ReservedItem>> GetItems(int skip, int take)
+            => await dbContext.ReservedItems
+                                .AsNoTracking()
+                                .Skip(skip)
+                                .Take(take)
+                                .ToListAsync();
+
+        public async Task RemoveOrUpdate(IEnumerable<ReservedItem> items)
         {
-            dbContext.ReserveProducts.RemoveRange(orderItems);
+            foreach (var item in items)
+            {
+                var dbItem = await dbContext.ReservedItems.FirstOrDefaultAsync(x => x.ProductId == item.ProductId);
+                if (dbItem is not null)
+                {
+                    var entry = dbContext.Entry(dbItem);
+                    dbItem.Count -= item.Count;
+                    if (dbItem.Count == 0)
+                        dbContext.ReservedItems.Remove(dbItem);
+                    else
+                        entry.Property(x => x.Count).IsModified = true;
+                }
+            }
             await dbContext.SaveChangesAsync();
         }
     }
